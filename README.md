@@ -2,6 +2,7 @@
 [![license](https://img.shields.io/github/license/cgrotz/terraform-provider-bis.svg)](https://github.com/cgrotz/terraform-provider-bis/blob/master/LICENSE)
 [![release](https://img.shields.io/github/release/cgrotz/terraform-provider-bis.svg)](https://github.com/cgrotz/terraform-provider-bis/releases/latest)
 [![Build](https://github.com/cgrotz/terraform-provider-bis/workflows/Go/badge.svg?branch=master&event=push)](https://github.com/cgrotz/terraform-provider-bis/workflows/Go/badge.svg?branch=master&event=push)
+[![CodeFactor](https://www.codefactor.io/repository/github/cgrotz/terraform-provider-bis/badge)](https://www.codefactor.io/repository/github/cgrotz/terraform-provider-bis)
 
 Bosch IoT Suite Terraform Provider (unofficial)
 ================
