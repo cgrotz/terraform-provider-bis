@@ -1,6 +1,9 @@
 package bis
 
 import (
+	"github.com/cgrotz/terraform-provider-bis/bis/config"
+	"github.com/cgrotz/terraform-provider-bis/bis/datasources"
+	"github.com/cgrotz/terraform-provider-bis/bis/resources"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -20,17 +23,17 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"bis_things_namespace": resourceThingsNamespace(),
+			"bis_things_namespace": resources.ResourceThingsNamespace(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"bis_things": datasourceThings(),
+			"bis_things": datasources.DatasourceThings(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	config := Config{
+	config := config.Config{
 		ClientID:     d.Get("client_id").(string),
 		ClientSecret: d.Get("client_secret").(string),
 	}

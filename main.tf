@@ -6,11 +6,11 @@ provider "bis" {
 }
 
 data "bis_things" "things_instance" {
-  things_solution_id = var.things_solution_id
-  api_token = var.things_api_token
+  solution_id = var.things_solution_id
+  api_token = var.things_api_key
 }
 
 resource "bis_things_namespace" "my-namespace" {
-  things_solution_id = data.bis_things.things_instance.id
+  solution_id = data.bis_things.things_instance.id
   namespace = "de.cgrotz.test1"
 }

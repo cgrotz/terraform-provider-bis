@@ -1,18 +1,19 @@
-package bis
+package datasources
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-func datasourceThings() *schema.Resource {
+// DatasourceThings creates the schema description for the things resource
+func DatasourceThings() *schema.Resource {
 	return &schema.Resource{
 		Read: resourceThingsRead,
 		Schema: map[string]*schema.Schema{
-			"things_solution_id": &schema.Schema{
+			"solution_id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"api_token": &schema.Schema{
+			"api_token": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -21,8 +22,8 @@ func datasourceThings() *schema.Resource {
 }
 
 func resourceThingsRead(d *schema.ResourceData, meta interface{}) error {
-	thingsSolutionID := d.Get("things_solution_id").(string)
-	d.SetId(thingsSolutionID)
+	solutionId := d.Get("solution_id").(string)
+	d.SetId(solutionId)
 	apiToken := d.Get("api_token").(string)
 	d.Set("api_token", apiToken)
 	return nil

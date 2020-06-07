@@ -1,9 +1,10 @@
-package bis
+package client
 
 import (
 	"fmt"
 	"log"
 
+	"github.com/cgrotz/terraform-provider-bis/bis/config"
 	"github.com/go-resty/resty/v2"
 )
 
@@ -16,9 +17,9 @@ type AuthSuccess struct {
 }
 
 // Authenticate requests a token from the IoT Suite by using the OAuth Client Credentials grant
-func Authenticate(clientID string, clientSecret string, thingsSolutionID string) (AuthSuccess, error) {
+func Authenticate(clientID string, clientSecret string, solutionID string) (AuthSuccess, error) {
 	client := resty.New()
-	requestBody := fmt.Sprintf("grant_type=client_credentials&client_id=%s&client_secret=%s&scope=service:iot-things-eu-1:%s/full-access", clientID, clientSecret, thingsSolutionID)
+	requestBody := fmt.Sprintf("grant_type=client_credentials&client_id=%s&client_secret=%s&scope=service:iot-things-eu-1:%s/full-access", clientID, clientSecret, solutionID)
 
 	log.Printf("[INFO] Trying to authenticate using request %s", requestBody)
 	var result AuthSuccess
@@ -51,9 +52,9 @@ type NamespaceUpdate struct {
 }
 
 // RetrieveNamespace retrieves information about an existing namespace
-func RetrieveNamespace(config Config, apiToken string, thingsSolutionID string, namespace string) (NamespaceEntry, error) {
+func RetrieveNamespace(config config.Config, solutionID string, namespace string) (NamespaceEntry, error) {
 	var namespaceEntry NamespaceEntry
-	auth, err := Authenticate(config.ClientID, config.ClientSecret, thingsSolutionID)
+	auth, err := Authenticate(config.ClientID, config.ClientSecret, solutionID)
 	if err != nil {
 		log.Printf("[ERROR] failed to authenticate %s", err)
 		return namespaceEntry, err
@@ -61,9 +62,8 @@ func RetrieveNamespace(config Config, apiToken string, thingsSolutionID string, 
 	client := resty.New()
 	resp, err := client.R().
 		SetHeader("Authorization", fmt.Sprintf("Bearer %s", auth.AccessToken)).
-		SetHeader("x-cr-api-token", apiToken).
 		SetPathParams(map[string]string{
-			"solutionId":  thingsSolutionID,
+			"solutionId":  solutionID,
 			"namespaceId": namespace,
 		}).
 		SetResult(&namespaceEntry).
@@ -80,10 +80,10 @@ func RetrieveNamespace(config Config, apiToken string, thingsSolutionID string, 
 }
 
 // CreateNamespace tries to create a Namespace in IoT Things
-func CreateNamespace(config Config, apiToken string, thingsSolutionID string, namespace string, defaultNamespace bool) error {
+func CreateNamespace(config config.Config, solutionID string, namespace string, defaultNamespace bool) error {
 	var namespaceEntry NamespaceUpdate
 	namespaceEntry.Default = defaultNamespace
-	auth, err := Authenticate(config.ClientID, config.ClientSecret, thingsSolutionID)
+	auth, err := Authenticate(config.ClientID, config.ClientSecret, solutionID)
 	if err != nil {
 		log.Printf("[ERROR] failed to authenticate %s", err)
 		return err
@@ -91,9 +91,8 @@ func CreateNamespace(config Config, apiToken string, thingsSolutionID string, na
 	client := resty.New()
 	resp, err := client.R().
 		SetHeader("Authorization", fmt.Sprintf("Bearer %s", auth.AccessToken)).
-		SetHeader("x-cr-api-token", apiToken).
 		SetPathParams(map[string]string{
-			"solutionId":  thingsSolutionID,
+			"solutionId":  solutionID,
 			"namespaceId": namespace,
 		}).
 		SetBody(namespaceEntry).
@@ -103,7 +102,34 @@ func CreateNamespace(config Config, apiToken string, thingsSolutionID string, na
 		log.Printf("[ERROR] failed creating namespace from IoT Things API %s", err)
 		return err
 	}
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() == 201 || resp.StatusCode() == 204 {
+		return nil
+	} else {
+		return fmt.Errorf("Unable to make call to IoT Things API expected 200 got %d %s", resp.StatusCode(), resp.Body())
+	}
+}
+
+// DeleteNamespace tries to delete a Namespace in IoT Things
+func DeleteNamespace(config config.Config, solutionID string, namespace string) error {
+	auth, err := Authenticate(config.ClientID, config.ClientSecret, solutionID)
+	if err != nil {
+		log.Printf("[ERROR] failed to authenticate %s", err)
+		return err
+	}
+	client := resty.New()
+	resp, err := client.R().
+		SetHeader("Authorization", fmt.Sprintf("Bearer %s", auth.AccessToken)).
+		SetPathParams(map[string]string{
+			"solutionId":  solutionID,
+			"namespaceId": namespace,
+		}).
+		Delete("https://things.eu-1.bosch-iot-suite.com/api/2/solutions/{solutionId}/namespaces/{namespaceId}")
+
+	if err != nil {
+		log.Printf("[ERROR] failed creating namespace from IoT Things API %s", err)
+		return err
+	}
+	if resp.StatusCode() != 204 {
 		return fmt.Errorf("Unable to make call to IoT Things API expected 200 got %d %s", resp.StatusCode(), resp.Body())
 	}
 	return nil

@@ -20,7 +20,7 @@ You can simple add the provider to your Terraform script with the following code
 provider "bis" {
   client_id = "<OAuth Client ID>"
   client_secret = "<OAuth Client Secret>"
-  things_solution_id = "<iot_thing_solution_id" // Optional; set this value if you want to provision resources on IoT Things
+  solution_id = "<iot_thing_solution_id" // Optional; set this value if you want to provision resources on IoT Things
 }
 ```
 
