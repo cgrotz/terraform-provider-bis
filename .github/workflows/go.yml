@@ -34,7 +34,12 @@ jobs:
       run: go build -o terraform-provider-bis
 
     - name: Test
-      run: go test
+      run: TF_ACC=1 go test -v bis/*_test.go
+      env:
+        TF_ACC: 1
+        CLIENT_ID: ${{ secrets.ClientId }}
+        CLIENT_SECRET: ${{ secrets.ClientSecret }}
+        THINGS_SOLUTION_ID: ${{ secrets.ThingsSolutionId }}
 
     - name: Upload result artifact
       uses: actions/upload-artifact@v2

@@ -15,15 +15,16 @@ func DatasourceThings() *schema.Resource {
 			},
 			"api_token": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Default:  "",
 			},
 		},
 	}
 }
 
 func resourceThingsRead(d *schema.ResourceData, meta interface{}) error {
-	solutionId := d.Get("solution_id").(string)
-	d.SetId(solutionId)
+	solutionID := d.Get("solution_id").(string)
+	d.SetId(solutionID)
 	apiToken := d.Get("api_token").(string)
 	d.Set("api_token", apiToken)
 	return nil
