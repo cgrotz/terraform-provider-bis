@@ -37,8 +37,8 @@ jobs:
       run: TF_ACC=1 go test -v bis/*.go
       env:
         TF_ACC: 1
-        CLIENT_ID: ${{ secrets.ClientId }}
-        CLIENT_SECRET: ${{ secrets.ClientSecret }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         THINGS_SOLUTION_ID: ${{ secrets.ThingsSolutionId }}
 
     - name: Upload result artifact
