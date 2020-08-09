@@ -34,7 +34,7 @@ func testAccPreCheck(t *testing.T) {
 }
 
 func TestAccBISProvider_Namespace(t *testing.T) {
-	namespace := "de.cgrotz.test1.test2.test3"
+	namespace := "de.cgrotz.actions_name_space1"
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
